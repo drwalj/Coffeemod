@@ -34,7 +34,6 @@ const unsigned char bitmap_arrow[] PROGMEM = {
  *
  * This bitmap from the file 'wanduhr (2).png'
  */
-#pragma once
 
 #define GRQ7BI_BMPWIDTH  32
 
@@ -250,19 +249,100 @@ void setup() {
 
 void Heat(){ //KNOPF RECHTS
   while(true){
-    Druck();
     if (digitalRead(2)==LOW){
-      delay(400);
+      delay(600);
       break;
     }
-    Temps();
+    pressureValue = analogRead(pressureInput); //reads value from input pin and assigns to variable
     if (digitalRead(2)==LOW){
-      delay(400);
+      delay(600);
       break;
     }
-    Display();
+    pressureValue = ((pressureValue-pressureZero)*pressuretransducermaxPSI)/(pressureMax-pressureZero); //conversion equation to convert analog reading to psi
     if (digitalRead(2)==LOW){
-      delay(400);
+      delay(600);
+      break;
+    }
+    pressureValue= pressureValue/14,5;
+
+
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+
+    
+    sensors.requestTemperatures();
+    
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    Celcius=sensors.getTempCByIndex(0);
+
+    
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+
+
+
+
+    display.clearDisplay();
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    display.setTextSize(1,2);
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    display.setTextColor(WHITE);
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    display.setCursor(25,15);
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    
+    display.print(pressureValue, 1); //prints pressure value to lcd screen, 1 digit on float
+
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    display.setCursor(50,15);
+    display.print("Bar");
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    display.setCursor(25,35);
+    display.print(Celcius);
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    display.setCursor(50,35);
+    display.print(" C");
+    if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    display.display();
+
+   if (digitalRead(2)==LOW){
+      delay(600);
+      break;
+    }
+    
+    if (digitalRead(2)==LOW){
+      delay(600);
       break;
     }
   }
@@ -274,29 +354,42 @@ void mayer(){ // KNOPF LINKS
     display.setTextSize(1,2);
     display.setTextColor(WHITE);
     display.setCursor(5,15);
-    display.print("Current Settings:")
-    
-
-    
-    display.clearDisplay();
-    display.setTextSize(1,2);
-    display.setTextColor(WHITE);
-    display.setCursor(5,15);
-    display.print("Brewing for "+ String(Brewingtime) + "s");
+    display.print("Current Settings:");
     sensors.requestTemperatures();
     Celcius=sensors.getTempCByIndex(0);
     display.setCursor(5,40);
-    display.print("Brewing at "+  String(Celcius) + "C");
+    display.print(String(Brewingtime) + " " +  String(Celcius) + "C");
     display.display();
-  
-    pinMode(7,OUTPUT);
-    digitalWrite(7,HIGH);
-    delay(500);
-    digitalWrite(7,LOW);
-    delay((Brewingtime*1000)-1000);
-    digitalWrite(7,HIGH);
-    delay(500);
-    digitalWrite(7,LOW);
+
+    while (true){
+      if (digitalRead(3)==LOW){
+        display.clearDisplay();
+        display.setTextSize(1,2);
+        display.setTextColor(WHITE);
+        display.setCursor(5,15);
+        display.print("Brewing for "+ String(Brewingtime) + "s");
+        sensors.requestTemperatures();
+        Celcius=sensors.getTempCByIndex(0);
+        display.setCursor(5,40);
+        display.print("Brewing at "+  String(Celcius) + "C");
+        display.display();
+      
+        pinMode(7,OUTPUT);
+        digitalWrite(7,HIGH);
+        delay(500);
+        digitalWrite(7,LOW);
+        delay((Brewingtime*1000)-1000);
+        digitalWrite(7,HIGH);
+        delay(500);
+        digitalWrite(7,LOW);
+        break;
+      }
+       if (digitalRead(4)==LOW){
+        delay(600);
+        break;
+       }
+
+    }
 }
 
 void firstloop(){ 
@@ -318,7 +411,7 @@ void loop() {
  firstloop();
 }
  
-void Sanduhr(){
+void Sanduhr(){ //MITTLERER KNOPF
   delay(600);
   while (true){
     display.clearDisplay();
@@ -345,11 +438,15 @@ void Sanduhr(){
     
     if (digitalRead(3)==LOW){
       delay(600);
-      Brewingtime += 5;
+      if (Brewingtime <50){
+         Brewingtime += 3;
+      }
     }
     if (digitalRead(4)==LOW){
       delay(600);
-      Brewingtime -= 5;
+      if (Brewingtime > 6){
+        Brewingtime -= 3;
+      }
     }
   }
 }
